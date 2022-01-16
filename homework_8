@@ -1,0 +1,15 @@
+import random
+a = [random.randint(10, 20) for i in range(15)]
+b = [random.randint(40, 50) for i in range(15)]
+print("Список a:", a)
+print("Список b:", b)
+list1 = []
+for i in a:
+    if i not in list1:
+        list1.append(i)
+print("Количество уникальных значений списка а:", len(list1))
+list1 = []
+for i in b:
+    if i not in list1:
+        list1.append(i)
+print("Количество уникальных значений списка b:", len(list1))
