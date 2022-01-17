@@ -1,0 +1,7 @@
+import random
+a = [random.randint(140, 200) for i in range(20)]
+petya  = int(input('введите рост Пети в см:'))
+a.append(petya)
+a = sorted(a, reverse=True)
+print('Перечень учащихся:', a)
+print('Номер Пети в строю:', a.index(petya) + a.count(petya))
