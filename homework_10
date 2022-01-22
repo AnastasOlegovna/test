@@ -1,0 +1,16 @@
+a = {x: y for x, y in zip('ABCDE', range(5))}
+b = {x: y for x, y in zip('BDRFA', range(5))}
+c = {}  # создаем словарь для одинаковых ключей
+d = a | b  # создаем общий словарь из словарей а и в (для уникальных ключей)
+# распаковываем словарь а
+for k, value in a.items():
+    # распаковываем словарь в
+    for key, value2 in b.items():
+        if k == key:
+            if value > value2:
+                c.update({k: value})
+            else:
+                c.update({k: value2})
+            d.pop(k)
+z = {**d, **c}  # объединяем 2 словаря:с уникальными ключами и с максимальным значением ключа, который повторяется
+print(z)
