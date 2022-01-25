@@ -2,18 +2,13 @@
 третий - операция, которая должна быть произведена над ними.
 Функция должна вернуть результат вычислений зависящий от третьего аргумент +,сложить их; если —, то вычесть; * — умножить; / — разделить (первое на второе).
 В остальных случаях вернуть строку "Неизвестная операция"""
-x = 7
-y = 14
-def arithmetic(x, y, operation):
-    if operation == x + y:
-        print('результат:', operation)
-    elif operation == x - y:
-        print('результат:', operation)
-    elif operation == x * y:
-        print('результат:', operation)
-    elif operation == x / y:
-        print('результат:', operation)
-    else:
-        print('Неизвестная операция')
 
-arithmetic(x, y, x * y)
+def arithmetic(x, y, d):
+    my_dict = {'+': x + y, '-': x - y, "*": x * y, '/': x / y}
+    if d not in my_dict:
+        print('Неизвестная операция')
+    else:
+        print(my_dict.get(d))
+
+arithmetic(7, 14, '*')
+
