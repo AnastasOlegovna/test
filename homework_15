@@ -1,0 +1,62 @@
+"""
+Программа проверки введенных пользователем логина и пароля.
+
+Выполняем проверку логина и пароль со значениями в словаре dict_password,
+в случае успеха устанавливаем auth = True
+"""
+
+
+def decorator(func):
+    def wrapper(username, password):
+        if not check_password():
+            False
+        if not authenticate():
+            False
+
+        return func
+    return wrapper
+
+@decorator
+def login(username, password) -> bool:
+    """
+    :param username: 
+    :param password: 
+    :return: возвращает bool значение при условии пррхождения проверки пользователя
+    """
+    return True
+
+
+def authenticate() -> bool:
+    """
+    :return: авторизация пользователя при условии прохождения проверки
+    """
+    return True
+
+
+def check_password() -> bool:
+    
+    return True
+
+
+if __name__ == '__main__':
+    dict_password: object  # глобальная переменная, объявленная вне функций
+    dict_password = {'ivan': '12345', 'katya': 'myparol1245', 'petya': 'trampampam12'}
+    count: int = 3
+    auth = False
+    while True:
+        user = input("Введите логин:")
+        password_user = input("Введите пароль:")
+        for k, v in dict_password.items():
+            if k == user and v == password_user:
+                auth = True
+                break
+        if count <= 1:
+            print('Попытки истекли!')
+            break
+        if auth:
+            print('Вы в системе!')
+            break
+        else:
+            count -= 1
+            print('Не правильное Имя или Пароль')
+            print(f'У вас осталось {count} попыток')
