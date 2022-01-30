@@ -1,29 +1,46 @@
 """
-Программа проверки введенных пользователем логина и пароля.
-
-Выполняем проверку логина и пароль со значениями в словаре dict_password,
-в случае успеха устанавливаем auth = True
+программа, которая будет проверять пароль пользователя и если пароль
+подходит будет авторизировать пользователя:
+Программа хранит Имена и Пароли в глобальном словаре
+Содержит три функции:
+check_password() возвращающая -> bool
+authenticate() -> bool
+login() принимающая минимум 2 аргумента username, password возвращающая -> bool
+функция login() с декоратором в котором вся логика проверки check_password и authenticate
+у пользователя должно быть 3 попытки после чего программа завершается и выводит сообщение
+"Попытки истекли!", при каждой не удачной попытки должно быть сообщение "У вас осталось Н попыток"
+Сценарий: пользователь с консоли вводит Имя и Пароль, программа возвращает текст "Вы в системе!"
+или "Не правильное Имя или Пароль"
 """
 
 
 def decorator(func):
     def wrapper(username, password):
-        if not check_password():
-            False
+
+        if not check_password(username, password):
+            auth = False
+        else:
+            auth = True
+
         if not authenticate():
             False
 
-        return func
+        return func(username, password, auth)
+
     return wrapper
 
+
 @decorator
-def login(username, password) -> bool:
+def login(username, password, u_auth) -> bool:
     """
-    :param username: 
-    :param password: 
+    :param username:
+    :param password:
+    :param u_auth
     :return: возвращает bool значение при условии пррхождения проверки пользователя
     """
-    return True
+    print(f'Ваш логин {username} :)')
+    if u_auth:
+        return True
 
 
 def authenticate() -> bool:
@@ -33,28 +50,26 @@ def authenticate() -> bool:
     return True
 
 
-def check_password() -> bool:
-    
-    return True
+def check_password(c_user, c_pass) -> bool:  # проверка пароля
+    if c_user in dict_password:
+        if c_pass == dict_password.get(user):
+            return True
 
 
 if __name__ == '__main__':
-    dict_password: object  # глобальная переменная, объявленная вне функций
+    dict_password: dict = {}
     dict_password = {'ivan': '12345', 'katya': 'myparol1245', 'petya': 'trampampam12'}
+
     count: int = 3
-    auth = False
     while True:
         user = input("Введите логин:")
         password_user = input("Введите пароль:")
-        for k, v in dict_password.items():
-            if k == user and v == password_user:
-                auth = True
-                break
-        if count <= 1:
-            print('Попытки истекли!')
-            break
-        if auth:
+
+        if login(user, password_user):  # вызываем задекорированную функцию:
             print('Вы в системе!')
+            break
+        elif count <= 1:
+            print('Попытки истекли!')
             break
         else:
             count -= 1
