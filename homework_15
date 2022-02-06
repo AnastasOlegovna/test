@@ -15,63 +15,59 @@ login() принимающая минимум 2 аргумента username, pas
 
 
 def decorator(func):
-    def wrapper(username, password):
+    def wrapper(user_main, password_main):
 
-        if not check_password(username, password):
-            auth = False
-        else:
-            auth = True
+        if not check_password(user_main, password_main):
+            return False
 
         if not authenticate():
-            False
+            return False
 
-        return func(username, password, auth)
+        return func(user_main, password_main)
 
     return wrapper
 
 
 @decorator
-def login(username, password, u_auth) -> bool:
+def login(username, password) -> bool:
     """
-    :param username:
-    :param password:
-    :param u_auth
-    :return: возвращает bool значение при условии пррхождения проверки пользователя
+    :param username:str
+    :param password:str
+    :return: возвращает bool значение при условии прохождения проверки пользователя
     """
-    print(f'Ваш логин {username} :)')
-    if u_auth:
-        return True
+
+    return True
 
 
 def authenticate() -> bool:
     """
-    :return: авторизация пользователя при условии прохождения проверки
+    :return: возвращает bool значение и авторизирует пользователя при условии прохождения проверки
     """
     return True
 
 
-def check_password(c_user, c_pass) -> bool:  # проверка пароля
-    if c_user in dict_password:
-        if c_pass == dict_password.get(user):
-            return True
+def check_password(username, password) -> bool:  # проверка пароля
+    return (username, password) in dict_password.items()
 
 
-if __name__ == '__main__':
-    dict_password: dict = {}
-    dict_password = {'ivan': '12345', 'katya': 'myparol1245', 'petya': 'trampampam12'}
+def main():
 
-    count: int = 3
-    while True:
-        user = input("Введите логин:")
-        password_user = input("Введите пароль:")
-
-        if login(user, password_user):  # вызываем задекорированную функцию:
-            print('Вы в системе!')
+    count = 3
+    while count >= 0:
+        if count == 0:
+            print("Попытки истекли!")
             break
-        elif count <= 1:
-            print('Попытки истекли!')
+        user = input("Введите имя: ")
+        password = input("Введите пароль: ")
+        if login(user, password):
+            print("Вы в системе!")
             break
         else:
             count -= 1
-            print('Не правильное Имя или Пароль')
-            print(f'У вас осталось {count} попыток')
+            print(f"Не правильное Имя или Пароль. У вас осталось {count} попыток")
+
+
+if __name__ == '__main__':
+    dict_password = {'ivan': '12345', 'katya': 'myparol1245', 'petya': 'trampampam12'}
+    main()
+
