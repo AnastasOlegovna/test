@@ -1,0 +1,94 @@
+"""
+В программу написанную в прошлом ДЗ добавить новый функционал (не изменяя старого)
+username and password получать из командной строки как не обязательные аргументы.
+Если оба аргумента переданы и имя и пароль прошли проверку то программа завершает работу
+не меняя прошлого поведения.
+Если не правильное имя или пароль даем 3 попытки как и раньше.
+Если передать только имя, то спрашивать только пароль, и наоборот.
+"""
+import argparse
+
+
+def parser_command():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-user', type=str)
+    parser.add_argument('--password', type=str)
+    args = parser.parse_args()
+    user_, password_ = args.user, args.password
+    if user_ is None and password_ is None:
+        print('Введите имя и пароль с командной строки')
+    elif password_ is None:
+        print('Введите пароль с командной строки: ')
+    elif user_ is None:
+        print('Введите логин с командной строки: ')
+    count = 3
+    while count >= 0:
+        if count == 0:
+            print("Попытки истекли!")
+            break
+        if (user_, password_) in dict_password.items():
+            return True
+        else:
+            count -= 1
+            print(f"Не правильное Имя или Пароль. У вас осталось {count} попыток")
+            user_ = input('Введите логин с командной строки: ')
+            password_ = input('Введите пароль с командной строки: ')
+
+def decorator(func):
+    def wrapper(user_main, password_main):
+
+        if not check_password(user_main, password_main):
+            return False
+
+        if not authenticate():
+            return False
+
+        return func(user_main, password_main)
+
+    return wrapper
+
+
+@decorator
+def login(username, password) -> bool:
+    """
+    :param username:str
+    :param password:str
+    :return: возвращает bool значение при условии прохождения проверки пользователя
+    """
+
+    return True
+
+
+def authenticate() -> bool:
+    """
+    :return: возвращает bool значение и авторизирует пользователя при условии прохождения проверки
+    """
+    return True
+
+
+def check_password(user, password) -> bool:  # проверка пароля
+
+    return (user, password) in dict_password.items()
+
+
+def main():
+    count = 3
+    while count >= 0:
+        if count == 0:
+            print("Попытки истекли!")
+            break
+        user = input("Введите имя: ")
+        password = input("Введите пароль: ")
+        if login(user, password):
+            print("Вы в системе!")
+            break
+        else:
+            count -= 1
+            print(f"Не правильное Имя или Пароль. У вас осталось {count} попыток")
+    return True
+
+
+if __name__ == '__main__':
+    dict_password = {'ivan': '12345', 'katya': 'myparol1245', 'petya': 'trampampam12'}
+    if parser_command():
+        main()
