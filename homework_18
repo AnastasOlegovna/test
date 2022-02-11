@@ -1,0 +1,97 @@
+"""
+Написать собственный клас Исключения - UserDoesNotExist
+Переписать функцию проверки пароля использую собственное исключения
+"""
+import argparse
+
+# Определяем собственное исключение
+class UserDoesNotExist(BaseException):
+    ...
+
+
+def parser_command():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-user', type=str)
+    parser.add_argument('--password', type=str)
+    args = parser.parse_args()
+    user__, password__ = args.user, args.password
+    return user__, password__
+
+
+def decorator(func):
+    def wrapper(user_main, password_main):
+
+        if not check_password(user_main, password_main):
+            return False
+
+        if not authenticate():
+            return False
+
+        return func(user_main, password_main)
+
+    return wrapper
+
+
+@decorator
+def login(username, password) -> bool:
+    """
+    :param username:str
+    :param password:str
+    :return: возвращает bool значение при условии прохождения проверки пользователя
+    """
+
+    return True
+
+
+def authenticate() -> bool:
+    """
+    :return: возвращает bool значение и авторизирует пользователя при условии прохождения проверки
+    """
+    return True
+
+
+def check_password(user, password) -> bool:  # проверка пароля
+
+    return (user, password) in dict_password.items()
+
+
+def main():
+    user__ = parser_command()[0]
+    password__ = parser_command()[1]
+    count = 3
+    if user__ is None and password__ is None:
+        print('Введите имя и пароль с командной строки')
+    elif password__ is None:
+        print('Введите пароль с командной строки: ')
+    elif user__ is None:
+        print('Введите логин с командной строки: ')
+    else:
+        while count >= 0:
+            if count == 0:
+                print("Попытки истекли!")
+                break
+            if (user__, password__) in dict_password.items():
+                user = input("Введите имя: ")
+                password = input("Введите пароль: ")
+                try:
+                    if login(user, password):
+                        print("Вы в системе!")
+                        break
+                    else:
+                        count -= 1
+                        print(f"Не правильное Имя или Пароль. У вас осталось {count} попыток")
+                        # Вызываем собственное исключение
+                        # 'UserDoesNotExist' с сообщением об ошибке
+                        raise UserDoesNotExist('Такой логин/пароль не существует')
+                except UserDoesNotExist as err:
+                    print(err)
+            else:
+                count -= 1
+                print(f"Не правильное Имя или Пароль. У вас осталось {count} попыток")
+                user__ = input('Введите логин с командной строки: ')
+                password__ = input('Введите пароль с командной строки: ')
+
+
+if __name__ == '__main__':
+    dict_password = {'ivan': '12345', 'katya': 'myparol1245', 'petya': 'trampampam12'}
+    main()
