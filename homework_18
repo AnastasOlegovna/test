@@ -4,6 +4,7 @@
 """
 import argparse
 
+
 # Определяем собственное исключение
 class UserDoesNotExist(BaseException):
     ...
@@ -51,8 +52,15 @@ def authenticate() -> bool:
 
 
 def check_password(user, password) -> bool:  # проверка пароля
-
-    return (user, password) in dict_password.items()
+    try:
+        if (user, password) in dict_password.items():
+            return (user, password) in dict_password.items()
+            # Вызываем собственное исключение
+            # 'UserDoesNotExist' с сообщением об ошибке
+        else:
+            raise UserDoesNotExist('Такой логин/пароль не существует')
+    except UserDoesNotExist as err:
+        print(err)
 
 
 def main():
@@ -73,18 +81,12 @@ def main():
             if (user__, password__) in dict_password.items():
                 user = input("Введите имя: ")
                 password = input("Введите пароль: ")
-                try:
-                    if login(user, password):
-                        print("Вы в системе!")
-                        break
-                    else:
-                        count -= 1
-                        print(f"Не правильное Имя или Пароль. У вас осталось {count} попыток")
-                        # Вызываем собственное исключение
-                        # 'UserDoesNotExist' с сообщением об ошибке
-                        raise UserDoesNotExist('Такой логин/пароль не существует')
-                except UserDoesNotExist as err:
-                    print(err)
+                if login(user, password):
+                    print("Вы в системе!")
+                    break
+                else:
+                    count -= 1
+                    print(f"Не правильное Имя или Пароль. У вас осталось {count} попыток")
             else:
                 count -= 1
                 print(f"Не правильное Имя или Пароль. У вас осталось {count} попыток")
