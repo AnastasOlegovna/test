@@ -1,0 +1,115 @@
+"""
+Имитировать неудачную попытку входа в систему с блокировкой пользователя на 5 минут.
+Выводить сообщение "Вы заблокированы! Следующая попытка через N мин."
+для решение понадобится:
+хранить дату/время - последняя НЕ удачная попытка входа
+действия с датой лучше вынести в отдельные функци
+т.к. мы не храним данные пользователя в базе данных или файле мы имитируем такую ситуацию,
+в нашем случае программа всегда
+будет выводить сообщение "Вы заблокированы! Следующая попытка через N мин."
+"""
+import argparse
+from datetime import datetime, timedelta
+
+
+def save_datetime_enter():
+    data = datetime.now().strftime('%d.%m.%Y %H:%M')
+    # clock_in_five_min = (datetime.now() + timedelta(minutes=5)).strftime('%d.%m.%Y %H:%M')
+    return data
+
+
+# Определяем собственное исключение
+class UserDoesNotExist(BaseException):
+    ...
+
+
+def parser_command():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-user', type=str)
+    parser.add_argument('--password', type=str)
+    args = parser.parse_args()
+    user__, password__ = args.user, args.password
+    return user__, password__
+
+
+def decorator(func):
+    def wrapper(user_main, password_main):
+
+        if not check_password(user_main, password_main):
+            return False
+
+        if not authenticate():
+            return False
+
+        return func(user_main, password_main)
+
+    return wrapper
+
+
+@decorator
+def login(username, password) -> bool:
+    """
+    :param username:str
+    :param password:str
+    :return: возвращает bool значение при условии прохождения проверки пользователя
+    """
+
+    return True
+
+
+def authenticate() -> bool:
+    """
+    :return: возвращает bool значение и авторизирует пользователя при условии прохождения проверки
+    """
+    return True
+
+
+def check_password(user, password) -> bool:  # проверка пароля
+    try:
+        if (user, password) in dict_password.items():
+            return (user, password) in dict_password.items()
+            # Вызываем собственное исключение
+            # 'UserDoesNotExist' с сообщением об ошибке
+        else:
+            raise UserDoesNotExist('Такой логин/пароль не существует')
+    except UserDoesNotExist as err:
+        print(err)
+
+
+def main():
+    user__ = parser_command()[0]
+    password__ = parser_command()[1]
+    count = 3
+    if user__ is None and password__ is None:
+        print('Введите имя и пароль с командной строки')
+    elif password__ is None:
+        print('Введите пароль с командной строки: ')
+    elif user__ is None:
+        print('Введите логин с командной строки: ')
+    else:
+        while count >= 0:
+            if count == 0:
+                print("Попытки истекли!")
+                print(f"Вы заблокированы! Следующая попытка через 5 мин")
+                print(f'Неудачная попытка входа {save_datetime_enter()}')
+                save_datetime_enter()
+                break
+            if (user__, password__) in dict_password.items():
+                user = input("Введите имя: ")
+                password = input("Введите пароль: ")
+                if login(user, password):
+                    print("Вы в системе!")
+                    break
+                else:
+                    count -= 1
+                    print(f"Не правильное Имя или Пароль. У вас осталось {count} попыток")
+            else:
+                count -= 1
+                print(f"Не правильное Имя или Пароль. У вас осталось {count} попыток")
+                user__ = input('Введите логин с командной строки: ')
+                password__ = input('Введите пароль с командной строки: ')
+
+
+if __name__ == '__main__':
+    dict_password = {'ivan': '12345', 'katya': 'myparol1245', 'petya': 'trampampam12'}
+    main()
