@@ -12,20 +12,28 @@ import json
 from datetime import datetime, timedelta
 
 
+def save_dict(x: dict):
+    with open("mydict.json", "wt") as file:
+        json.dump(x, file)
+
+
+def read_dict():
+    with open("mydict.json", "rt") as file:
+        y = json.load(file)
+        return y
+
+
 # перезаписываем в словарь mydict.json дату/время входа юзера в привязке к его логину из командной строки
 def save_datetime_enter():
     user = parser_command()[0]
     data = datetime.now().strftime('%d.%m.%Y %H:%M')
-    # clock_in_five_min = (datetime.now() + timedelta(minutes=5)).strftime('%d.%m.%Y %H:%M')
-    # сохраняем последнюю попытку входа
-    with open("mydict.json", "rt") as file:
-        newDict2 = json.load(file)
-        for v in newDict2.values():
-            for j in list(v):
-                if j == user:
-                    v["last_enter"] = data
-    with open("mydict.json", "wt") as file:
-        json.dump(newDict2, file)
+    # открываем словарь в json и преобразовываем его (добавляем дату), вызываем read_dict()
+    newDict2 = read_dict()
+    for v in newDict2.values():
+        for j in list(v):
+            if j == user:
+                v["last_enter"] = data
+    save_dict(newDict2)  # сохраняем последнюю попытку входа, вызываем save_dict
     return data
 
 
@@ -33,14 +41,14 @@ def save_datetime_enter():
 class UserDoesNotExist(BaseException):
     ...
 
+
 # функция ввода аргументов командной строки ('-user', '--password')
 def parser_command():
     parser = argparse.ArgumentParser()
     parser.add_argument('-user', type=str)
     parser.add_argument('--password', type=str)
     args = parser.parse_args()
-    user__, password__ = args.user, args.password
-    return user__, password__
+    return args.user, args.password
 
 
 def decorator(func):
@@ -76,17 +84,15 @@ def authenticate() -> bool:
 
 def check_password(user, password) -> bool:  # проверка пароля
     try:
-        with open('mydict.json', 'rt') as file:    # открываем файл в режиме чтения
-            NewDict = json.load(file)
-            for v in NewDict.values():
-                for j, k in v.items():
-                    if (user, password) in v.items():
-                        return (user, password) in v.items()
-                        break
-            # Вызываем собственное исключение
-            # 'UserDoesNotExist' с сообщением об ошибке
-            else:
-                raise UserDoesNotExist('Такой логин/пароль не существует')
+        NewDict = read_dict()   # открываем файл в режиме чтения
+        for v in NewDict.values():
+            for j, k in v.items():
+                if (user, password) in v.items():
+                    return (user, password) in v.items()
+                    break
+            # Вызываем собственное исключение 'UserDoesNotExist' с сообщением об ошибке
+        else:
+            raise UserDoesNotExist('Введенный логин/пароль не корректный')
     except UserDoesNotExist as err:
         print(err)
 
@@ -131,6 +137,5 @@ if __name__ == '__main__':
         'Katya': {'katya': 'myparol1245', 'last_enter': None},
         'Petya': {'petya': 'trampampam12', 'last_enter': None}
     }
-    with open('mydict.json', 'w') as f:
-        json.dump(dict_password, f)
+    save_dict(dict_password)    # сохраняем наш словарь при первом запуске
     main()
