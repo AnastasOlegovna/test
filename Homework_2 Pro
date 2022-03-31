@@ -1,22 +1,26 @@
-print("Ноль в качестве знака операции"
+# This is a sample Python calculator
+
+print("Ноль в качестве знака операции или нечисловое значение переменных"
       "\nзавершит работу программы")
 while True:
-    s = input("Знак (+,-,*,/): ")
-    if s == '0':
-        break
+    s = input("Выберите операцию (+,-,*,/): ")
     if s in ('+', '-', '*', '/'):
-        x = float(input("x="))
-        y = float(input("y="))
+        try:
+            x = float(input("Введите число x="))
+            y = float(input("Введите число y="))
+        except ValueError or UnicodeDecodeError:
+            print("Введите число!")
+            break
         if s == '+':
-            print("%.2f" % (x+y))
+            print(x + y)
         elif s == '-':
-            print("%.2f" % (x-y))
+            print(x - y)
         elif s == '*':
-            print("%.2f" % (x*y))
+            print(x * y)
         elif s == '/':
             if y != 0:
-                print("%.2f" % (x/y))
+                print(x / y)
             else:
-                print("Деление на ноль!")
+                print("Деление на ноль запрещено!")
     else:
         print("Неверный знак операции!")
