@@ -55,7 +55,7 @@ def parser_all(url, back_post_id):
         if url == "https://www.facebook.com/silpo":  # функция для facebook silpo
             post = soup.find("div", class_='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a')
             post_title = post.find(style="text-align: start;").text
-            post_id = post.title
+            post_id = post_title
 
 
         # elif url == "https://forbes.ua/news":  # функция для сайта forbes.ua
