@@ -1,16 +1,16 @@
 from bs4 import BeautifulSoup  # подключаем библиотеку для извлечения данных из файлов HTML и XML
-import requests  # подключаем HTTP библиотеку для работы с сайтами
 import logging  # подключаем библиотеку логгинга
 import time  # подключаем библиотеку для работы с временем
-from selenium import webdriver
+from selenium import webdriver  # подключаем библиотеку для работы с сайтами
 
-base_file2 = '/Users/User/base2.txt'  # !!! пофиксить пути!!!
+base_file2 = '/home/anastasia/python/base2.txt'  # !!! пофиксить пути!!!
 
 # создаем двумерный массив для сайтов [url_site][back_post_id]
-site = [["https://www.facebook.com/silpo", 0]]  # создано 20.07.2022
-
+site = [["https://www.facebook.com/silpo", 0]]  # создано 24.07.2022
 
 count = len(site)  # получаем количество строк в массиве
+
+
 # работа с файлом хранения последних ИД статей по сайтам
 
 try:
@@ -35,27 +35,24 @@ except FileNotFoundError:
 
 
 def get_post(index):
-    post = parser_all(site[index][0], site[index][1])  # парсим сайт, отправляя его адрес и ИД предыдущего поста
+    post = parser_all(site[index][0], site[index][1])   # парсим сайт, отправляя его адрес и ИД предыдущего поста
     site[index][1] = post[1]  # сохраняем ИД текущего поста для следующего обращения
     return post
 
 
-def parser_all(url, back_post_id):
+def parser_all(url, back_post_title):
     # обнуляем переменные
     post = ""
-    post_title = ""
-    post_url = ""
-    post_id = back_post_id
+    post_title = back_post_title
     page = get_page(url)  # получение страницы
     if page is None:
-        return None, post_id
+        return None, post_title
 
     try:
-        soup = BeautifulSoup(page.content, "html.parser")
+        soup = BeautifulSoup(page, "html.parser")
         if url == "https://www.facebook.com/silpo":  # функция для facebook silpo
             post = soup.find("div", class_='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a')
-            post_title = post.find(style="text-align: start;").text
-            post_id = post_title
+            post_title = "*Сильпо:*"+post.find(style="text-align: start;").text
 
 
         # elif url == "https://forbes.ua/news":  # функция для сайта forbes.ua
@@ -64,7 +61,6 @@ def parser_all(url, back_post_id):
         #     # разделяем строку по "-", берем последний элемент получившегося списка
         #     post_id = post_id_url.split('-')[-1]
         #     # post_id = post_id_url[-4:-0]
-
 
         else:
             print("Вказана адреса сайту не знайдена для вибору обробника %s" % url)
@@ -79,24 +75,26 @@ def parser_all(url, back_post_id):
             file_w.write(post)
             file_w.close()
 
-    if post_id != back_post_id:
-        return f"{post_title}\n\n{post_url}", post_id
+    if post_title != back_post_title:
+        return f"{post_title}\n", post_title
     else:
-        return None, post_id
+        return None, post_title
 
 
 def get_page(page_url):  # Общая функция получения страницы
     # выполняем запрос, в случае ошибки повторяем три раза
-    headers = {'User-Agent': 'Mozilla/5.0'}
     page_ret = None
     n = 0
     while n <= 3:
         try:
-            driver = webdriver.Chrome(executable_path='C:\\Users\\User\\chromedriver.exe')
+            options = webdriver.ChromeOptions()
+            options.add_argument('headless')
+            driver = webdriver.Chrome(executable_path='/home/anastasia/python/chromedriver', chrome_options=options)
             driver.get(page_url)
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(10)
             page_ret = driver.page_source
+            driver.quit()
         # except requests.exceptions:    # except requests.exceptions.ConnectionError:
         except Exception as erro:
             # r.status_code = "Connection refused"
@@ -112,3 +110,6 @@ def get_page(page_url):  # Общая функция получения стра
             return page_ret
     return page_ret
     # else выполняется в том случае, если исключения не было, а finally в любом
+
+
+
