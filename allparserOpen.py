@@ -1,20 +1,18 @@
-import logging      # подключаем библиотеку логгинга
-import time         # подключаем библиотеку для работы с временем
-import requests     # подключаем HTTP библиотеку для работы с сайтами
-import telebot      # подключаем библиотеку TelegramBotAPI для работы с API telegram
+import logging  # подключаем библиотеку логгинга
+import time  # подключаем библиотеку для работы с временем
+import requests  # подключаем HTTP библиотеку для работы с сайтами
+import telebot  # подключаем библиотеку TelegramBotAPI для работы с API telegram
 from telebot import types
 
-# import os
 import news_parser_Open  # подключаем модуль парсера новостных сайтов
 
-token = "2075481312:AAFSqpJD4jTdtHTYx8Pepl6YVSa0RhY2uPI"#second bot (@starsfromdeliverybot)
-id_chan = "-1001592062496"#chat 'Открытия'
+token = "2075481312:AAFSqpJD4jTdtHTYx8Pepl6YVSa0RhY2uPI"  # second bot (@starsfromdeliverybot)
+id_chan = "-1001592062496"  # chat 'Открытия'
 
 logger = telebot.logger
-# telebot.logger.setLevel(logging.DEBUG) # Outputs debug messages to console.
 
 count_err = 0  # обнуляем счетчик ошибок связи
-mute_on = False     # запрет отправлять сообщения в канал
+mute_on = False  # запрет отправлять сообщения в канал
 
 bot = telebot.TeleBot(token)  # создаем экземпляр класса TeleBot
 """
@@ -46,34 +44,24 @@ def start(message):  # выполняется при запуске бота:
     #                           os.path.basename(__file__).split('.py')[0])  # отправка сообщения в канал
     if mute_on is False:
         bot.send_message(id_chan, "Де ви знову взялися на мою голову")
-        # photo_url = "https://funart.pro/uploads/posts/2021-07/1626583481_6-funart-pro-p-smeshnie-koti-do-slez-zhivotnie-krasivo-fo-11.jpg"
-        # bot.send_photo(id_chan, photo=photo_url, caption="Я проснулся!")
+        photo_url = "https://funart.pro/uploads/posts/2021-07/1626583481_6-funart-pro-p-smeshnie-koti-do-slez-zhivotnie-krasivo-fo-11.jpg"
+        bot.send_photo(id_chan, photo=photo_url, caption="*Я сплю, трясця!*", parse_mode='Markdown')
     # функция send_photo для отправки изображений из локального хранилища или по ссылке
-    # bot.send_photo(message.chat.id, photo=photo_url, caption='It works!')
 
     while True:
         count_post = 0  # счетчик отправленных постов
-        file_w = open(news_parser_Open.base_file, 'w')
+        # file_w = open(news_parser_Open.base_file, 'w')
         for i in range(news_parser_Open.count):  # Отправка постов с новостями
             post_text = news_parser_Open.get_post(i)
-            if not mute_on:     # 05/04 добавил мутирование
+            if not mute_on:  # 05/04 добавил мутирование
                 if post_text[0] is not None:  # условие отправки
-                    bot.send_message(id_chan, post_text[0], disable_web_page_preview=True)
+                    bot.send_message(id_chan, post_text[0], disable_web_page_preview=True, parse_mode='Markdown')
                     count_post += 1  # инкрементируем счетчик отправленных постов в этом цикле
-
-            file_w.write(str(news_parser_Open.site[i][1]) + '\n')
-        file_w.close()
-
         sleep_t = 600  # интервал проверки сайтов и отправки сообщений в Telegram
-
-        # now = datetime.now().time()  # time object
-        # print("now =", now)
-
         t = time.localtime()
         current_t = time.strftime("%H:%M:%S", t)
         print("%s - Відпрацьовано через %d сек. з запуску, далі спимо %d сек. Всього нових: %d шт. в даному циклі" %
               (current_t, time.perf_counter(), sleep_t, count_post))
-        # print("Всього нових %d шт. в даному циклі" % count_post)
 
         time.sleep(sleep_t)  # засыпаем на xx минут
 
@@ -81,7 +69,7 @@ def start(message):  # выполняется при запуске бота:
 @bot.message_handler(commands=['info'])
 def info(message):
     bot.send_message(message.chat.id, f"Поточний файл:\n"
-    f"{news_parser_Open.site[0][0]}, {news_parser_Open.site[0][1]}\n",
+                                      f"{news_parser_Open.site[0][0]}, {news_parser_Open.site[0][1]}\n",
                      disable_web_page_preview=True)
 
 
@@ -126,7 +114,6 @@ if __name__ == '__main__':
         except Exception as err_t:
             current_time = time.strftime("%H:%M:%S", time.localtime())
             logging.exception("%s - Возникло исключение с Telegram API!" % current_time)
-            # print(err_t)
             time.sleep(20)
         except requests.exceptions.ReadTimeout:
             # обработка ошибок при получении данных с сервера
@@ -145,12 +132,3 @@ if __name__ == '__main__':
                 count_err = 0
                 print("Обнаружено слишком много ошибок, спим %d сек." % pause)
             time.sleep(pause)
-    # try:
-    #     bot.infinity_polling(logger_level=logging.DEBUG, timeout=10, long_polling_timeout=5)
-    # # ConnectionError и ReadTimeout из-за возможного таймаута библиотеки requests
-    # except requests.exceptions.ReadTimeout:
-    #     # обработка ошибок при получении данных с сервера
-    #     count_err += 1
-    #     print('Ошибка - Время ожидания ответа истекло.')
-    #     print("Всего ошибок %d шт." % count_err)
-    #     time.sleep(10)
