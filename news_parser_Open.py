@@ -6,7 +6,8 @@ from selenium import webdriver  # подключаем библиотеку дл
 base_file2 = '/home/anastasia/python/base2.txt'  # !!! пофиксить пути!!!
 
 # создаем двумерный массив для сайтов [url_site][back_post_id]
-site = [["https://www.facebook.com/silpo", 0]]  # создано 24.07.2022
+site = [["https://www.facebook.com/silpo", 0],# создано 24.07.2022
+        ["https://www.facebook.com/sviymarket", 0]]  # создано 25.07.2022
 
 count = len(site)  # получаем количество строк в массиве
 
@@ -55,12 +56,15 @@ def parser_all(url, back_post_title):
             post_title = "*Сильпо:*"+post.find(style="text-align: start;").text
 
 
-        # elif url == "https://forbes.ua/news":  # функция для сайта forbes.ua
-        #     post = soup.find("div", class_="c-feed-col").find("h3", class_="c-entry-title")
-        #     post_id_url = post.find("a", href=True)['href'].strip()
-        #     # разделяем строку по "-", берем последний элемент получившегося списка
-        #     post_id = post_id_url.split('-')[-1]
-        #     # post_id = post_id_url[-4:-0]
+        elif url == "https://www.facebook.com/sviymarket":  # функция для сайта facebook свой маркет
+            post = soup.find("div", class_='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a')
+            items = post.find_all(style='text-align: start;')
+            post_common = []
+            for item in items:
+                post_common.append(item.get_text(strip=True))
+            post_common.pop()
+            post_common = " ".join(post_common)
+            post_title="*Свой маркет:*"+post_common
 
         else:
             print("Вказана адреса сайту не знайдена для вибору обробника %s" % url)
