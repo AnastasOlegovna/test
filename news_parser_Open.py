@@ -6,11 +6,13 @@ from selenium import webdriver  # подключаем библиотеку дл
 base_file2 = '/home/anastasia/python/base2.txt'  # !!! пофиксить пути!!!
 
 # создаем двумерный массив для сайтов [url_site][back_post_id]
-site = [["https://www.facebook.com/silpo", 0],# создано 24.07.2022
-        ["https://www.facebook.com/sviymarket", 0]]  # создано 25.07.2022
+site = [["https://www.facebook.com/silpo", 0],  # создано 24.07.2022
+        ["https://www.facebook.com/sviymarket", 0],  # создано 25.07.2022
+        ["https://www.facebook.com/varusua", 0],
+        ["https://www.facebook.com/myasorubka.sumy", 0],
+        ]  # создано 26.07.2022
 
 count = len(site)  # получаем количество строк в массиве
-
 
 # работа с файлом хранения последних ИД статей по сайтам
 
@@ -26,17 +28,17 @@ except FileNotFoundError:
     # параметр "w", тогда файл будет создан только в том случае, если он не существовал до этого.
     my_file.close()
 
-    if len(param) == 0:
-        print("Бот запущено! Файл порожній, ІД постів обнулені")
-    elif len(param) == count:
-        print("Бот запущено! Прочитані рядки файлу та отримані такі стартові значення:")
-        for num in range(count):  #
-            site[num][1] = param[num]  # переносим ИД
-            print(site[num])
+if len(param) == 0:
+    print("Бот запущено! Файл порожній, ІД постів обнулені")
+elif len(param) == count:
+    print("Бот запущено! Прочитані рядки файлу та отримані такі стартові значення:")
+    for num in range(count):  #
+        site[num][1] = param[num]  # переносим ИД
+        print(site[num])
 
 
 def get_post(index):
-    post = parser_all(site[index][0], site[index][1])   # парсим сайт, отправляя его адрес и ИД предыдущего поста
+    post = parser_all(site[index][0], site[index][1])  # парсим сайт, отправляя его адрес и ИД предыдущего поста
     site[index][1] = post[1]  # сохраняем ИД текущего поста для следующего обращения
     return post
 
@@ -53,7 +55,7 @@ def parser_all(url, back_post_title):
         soup = BeautifulSoup(page, "html.parser")
         if url == "https://www.facebook.com/silpo":  # функция для facebook silpo
             post = soup.find("div", class_='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a')
-            post_title = "*Сильпо:*"+post.find(style="text-align: start;").text
+            post_title = "*Сильпо:*" + post.find(style="text-align: start;").text
 
 
         elif url == "https://www.facebook.com/sviymarket":  # функция для сайта facebook свой маркет
@@ -64,7 +66,27 @@ def parser_all(url, back_post_title):
                 post_common.append(item.get_text(strip=True))
             post_common.pop()
             post_common = " ".join(post_common)
-            post_title="*Свой маркет:*"+post_common
+            post_title = "*Свой маркет:*" + post_common
+
+        elif url == "https://www.facebook.com/varusua":  # функция для сайта facebook varus
+            post = soup.find("div", class_='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a')
+            items = post.find_all(style='text-align: start;')
+            post_common = []
+            for item in items:
+                post_common.append(item.get_text(strip=True))
+            post_common.pop()
+            post_common = " ".join(post_common)
+            post_title = "*Varus:*" + post_common
+
+        elif url == "https://www.facebook.com/myasorubka.sumy":  # функция для сайта facebook mysorubka
+            post = soup.find("div", class_='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a')
+            items = post.find_all(style='text-align: start;')
+            post_common = []
+            for item in items:
+                post_common.append(item.get_text(strip=True))
+            post_common.pop()
+            post_common = " ".join(post_common)
+            post_title = "*Myasorubka:*" + post_common
 
         else:
             print("Вказана адреса сайту не знайдена для вибору обробника %s" % url)
@@ -114,6 +136,3 @@ def get_page(page_url):  # Общая функция получения стра
             return page_ret
     return page_ret
     # else выполняется в том случае, если исключения не было, а finally в любом
-
-
-
