@@ -70,6 +70,8 @@ def start(message):  # выполняется при запуске бота:
 def info(message):
     bot.send_message(message.chat.id, f"Поточний файл:\n"
                                       f"{news_parser_Open.site[0][0]}, {news_parser_Open.site[0][1]}\n",
+                                     f"{news_parser_Open.site[1][0]}, {news_parser_Open.site[1][1]}\n",
+                                     f"{news_parser_Open.site[2][0]}, {news_parser_Open.site[2][1]}\n",
                      disable_web_page_preview=True)
 
 
